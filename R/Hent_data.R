@@ -181,7 +181,8 @@ GetKlass <- function(klass,
                       variant = NULL,
                       output_level = NULL,
                       language = "nb",
-                      output_style = "normal"){
+                      output_style = "normal",
+                      notes = FALSE){
   
   # create type of klassification for using later
   type <- ifelse(is.null(correspond), "vanlig", "kor")
@@ -279,7 +280,12 @@ GetKlass <- function(klass,
 
   if (type %in% c("vanlig", "variant")){
     klass_data <- jsonlite::fromJSON(klass_text, flatten = TRUE)$codes
-    klass_data <- klass_data[, c("code", "parentCode", "level", "name")]
+    # add notes
+    if(notes){
+      klass_data <- klass_data[, c("code", "parentCode", "level", "name", "notes")]
+    } else {
+      klass_data <- klass_data[, c("code", "parentCode", "level", "name")]
+    }
   }
   if (type == "kor"){
     klass_data <- jsonlite::fromJSON(klass_text, flatten = TRUE)$correspondenceItems
@@ -330,6 +336,5 @@ GetKlass <- function(klass,
       # rename as klass_data for return
       klass_data <- wide_data
   }
-  
   as.data.frame(klass_data)
 }
